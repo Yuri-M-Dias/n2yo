@@ -22,10 +22,11 @@ class Client {
   }
 
   instanceAxios() {
+    this.defaultRequestParams = {apiKey : this.apiKey};
     this.axios = axios.create({
       baseURL : this.baseURL,
-      timeout : 1000,
-      params : {apiKey : this.apikey},
+      // timeout : 1000,
+      params : this.defaultRequestParams,
       transformResponse : [this.updateTransactionsCount]
     });
   }
@@ -34,7 +35,6 @@ class Client {
    * Updates the know transactions limit from response data
    */
   updateTransactionsCount(data) {
-    console.log([ "Received: ", data ]);
     if (data.info) {
       this.transactionsCount = data.info.transactionscount;
     }
@@ -42,7 +42,9 @@ class Client {
   }
 
   async tle(noradID) {
-    return this.axios.get('/tle/' + noradID, {params : {apiKey : this.apikey}});
+    let params = Object.assign({}, this.defaultRequestParams);
+    // Format TLE?
+    return this.axios.get('/tle/' + noradID);
   }
 
 }

@@ -1,4 +1,5 @@
 'use strict';
+require("./support/setup.js");
 
 const N2YO = require('../');
 const apikey = process.env.N2YO_API_KEY;
@@ -11,7 +12,6 @@ describe('Client', function() {
       const client = new N2YO.Client();
       let resultingURL = client.baseURL;
       assert.equal(resultingURL, 'https://www.n2yo.com/rest/v1/satellite/');
-      const resultingOptions = client.options;
     });
 
     it('define URL', function() {
