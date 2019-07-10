@@ -21,7 +21,7 @@ describe("API client", function() {
         it("and it needs to be default", function() {
             const definedApikey = client.applyDefaultRequestParams();
             const clientApikey = client.axios.defaults.params;
-            clientApikey.should.equal(definedApikey);
+            clientApikey.should.equal(definedApikey.params);
         });
         it("and it needs to be valid", function() {
             const clientApikey = client.axios.defaults.params;
@@ -46,16 +46,15 @@ describe("API client", function() {
         });
         it("and can GET the ISS TLE", async function() {
             const tlePromise = client.getTLE(ISS_NORAD_ID);
-            const tleResult = await tlePromise;
             tlePromise.should.be.fulfilled;
-            expect(tleResult.data).to.not.have.property("error");
-            tleResult.data.should.have.property("data");
+            const tleResult = await tlePromise;
+            tleResult.data.should.not.have.property("error");
             tleResult.data.should.have.property("info");
             const resultInfo = tleResult.data.info;
             const expectedInfo = {
                 satid: 25544,
                 satname: "SPACE STATION",
-                transactionscount: 1
+                transactionscount: client.transactionsCount
             };
             expect(resultInfo).to.deep.equal(expectedInfo);
         });

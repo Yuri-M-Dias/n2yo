@@ -22,12 +22,19 @@ class Client {
     }
 
     instanceAxios() {
-        this.defaultRequestParams = { apiKey: this.apiKey };
+        this.defaultRequestParams = { apiKey: this.apikey };
+        let transformResponseHandlers = axios.defaults.transformResponse.concat(
+            this.updateTransactionsCount.bind(this)
+        );
+
         this.axios = axios.create({
             baseURL: this.baseURL,
+            headers: {
+                "Content-Type": "application/json"
+            },
             // timeout : 1000,
             params: this.defaultRequestParams, // Not working?
-            transformResponse: [this.updateTransactionsCount]
+            transformResponse: transformResponseHandlers
         });
     }
 
@@ -46,7 +53,7 @@ class Client {
      * Needed because the Axios defaultParams aren't working
      */
     applyDefaultRequestParams(params = {}) {
-        return Object.assign(params, this.defaultRequestParams);
+        return Object.assign(params, { params: this.defaultRequestParams });
     }
 
     /**
@@ -56,7 +63,6 @@ class Client {
     async getTLE(noradID) {
         if (!noradID) return Promise.reject(new Error("Need a valid NORAD ID"));
         let params = this.applyDefaultRequestParams();
-        console.log(["Default params", params]);
         // Format TLE?
         return this.axios.get("/tle/" + noradID, params);
     }
