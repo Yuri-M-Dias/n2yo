@@ -7,7 +7,7 @@ const apikey = process.env.N2YO_API_KEY;
 var assert = require('assert');
 
 describe('Client', function() {
-  describe('intialize', function() {
+  describe('should intialize', function() {
     it('empty should work', function() {
       const client = new N2YO.Client();
       let resultingURL = client.baseURL;
@@ -29,7 +29,7 @@ describe('Client', function() {
     it('should define axios', function() {
       const client = new N2YO.Client(apikey);
       const definedAxios = client.axios;
-      assert.equal(definedAxios.getUri(), client.baseURL);
+      assert.equal(definedAxios.defaults.baseURL, client.baseURL);
     });
   });
 });

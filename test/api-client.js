@@ -1,19 +1,63 @@
-'use strict';
+"use strict";
+
 require("./support/setup.js");
-const N2YO = require('../');
+const N2YO = require("../");
+var chai = require("chai"),
+    expect = chai.expect,
+    should = chai.should(),
+    assert = chai.assert;
+const chaiAsPromised = require("chai-as-promised");
+chai.use(chaiAsPromised);
 
-var assert = require('assert');
+const ISS_NORAD_ID = "25544";
+const apikey = process.env.N2YO_API_KEY;
 
-describe('API cleint', function() {
-  describe('should be able to make GET requests', function() {
-    it('get a TLE', async function() {
-      const client = new N2YO.Client(process.env.N2YO_API_KEY);
-      const NORAD_ID = '25544';
-      const tlePromise = client.tle(NORAD_ID);
-      tlePromise.should.be.fulfilled;
-      console.log([ 'GET', result ]);
-      const changedTransactions = client.transactionsCount;
-      assert.equal(changedTransactions, 1);
+describe("API client", function() {
+    let client = null;
+    describe("should have an apikey", function() {
+        beforeEach(() => {
+            client = new N2YO.Client(apikey);
+        });
+        it("and it needs to be default", function() {
+            const definedApikey = client.applyDefaultRequestParams();
+            const clientApikey = client.axios.defaults.params;
+            clientApikey.should.equal(definedApikey);
+        });
+        it("and it needs to be valid", function() {
+            const clientApikey = client.axios.defaults.params;
+            // TODO?
+        });
+        it("and it should return an error if invalid", function() {});
     });
-  });
+    describe("should be able to request TLEs", function() {
+        beforeEach(() => {
+            client = new N2YO.Client(apikey);
+        });
+        it("and needs a NORAD ID", function() {
+            const tlePromise = client.getTLE();
+            return tlePromise.should.be.rejectedWith(Error);
+        });
+        it("and can make a GET to TLE", function() {
+            const tlePromise = client.getTLE(ISS_NORAD_ID);
+            return Promise.all([
+                tlePromise.should.not.eventually.have.property("error"),
+                tlePromise.should.eventually.have.property("data")
+            ]);
+        });
+        it("and can GET the ISS TLE", async function() {
+            const tlePromise = client.getTLE(ISS_NORAD_ID);
+            const tleResult = await tlePromise;
+            tlePromise.should.be.fulfilled;
+            expect(tleResult.data).to.not.have.property("error");
+            tleResult.data.should.have.property("data");
+            tleResult.data.should.have.property("info");
+            const resultInfo = tleResult.data.info;
+            const expectedInfo = {
+                satid: 25544,
+                satname: "SPACE STATION",
+                transactionscount: 1
+            };
+            expect(resultInfo).to.deep.equal(expectedInfo);
+        });
+    });
 });
