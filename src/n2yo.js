@@ -87,6 +87,10 @@ class Client {
             return Promise.reject(
                 new Error("Need a number of future positions to calculate")
             );
+        if (!lat || !lon || !alt)
+            return Promise.reject(
+                new Error("Need a valid latitude, longitude and altitude")
+            );
         let params = this.applyDefaultRequestParams();
         let requestPath = "/positions/";
         // TODO: Format TLE?
@@ -105,6 +109,16 @@ class Client {
         alt = this.alt
     ) {
         if (!satid) return Promise.reject(new Error("Need a valid NORAD ID"));
+        if (!lat || !lon || !alt)
+            return Promise.reject(
+                new Error("Need a valid latitude, longitude and altitude")
+            );
+        if (!days)
+            return Promise.reject(new Error("Need a valid number of days"));
+        if (!min_visibility)
+            return Promise.reject(
+                new Error("Need a valid minimum seconds of visibility")
+            );
         let params = this.applyDefaultRequestParams();
         let requestPath = "/visualpasses/";
         // TODO: Format TLE?
@@ -123,6 +137,14 @@ class Client {
         alt = this.alt
     ) {
         if (!satid) return Promise.reject(new Error("Need a valid NORAD ID"));
+        if (!lat || !lon || !alt)
+            return Promise.reject(
+                new Error("Need a valid latitude, longitude and altitude")
+            );
+        if (!days)
+            return Promise.reject(new Error("Need a valid number of days"));
+        if (!min_elevation)
+            return Promise.reject(new Error("Need a valid minimum elevation"));
         let params = this.applyDefaultRequestParams();
         let requestPath = "/radiopasses/";
         // TODO: Format TLE?
@@ -134,13 +156,19 @@ class Client {
      */
     async getAbove(
         search_radius,
-        catergory_id, // TODO: enum?
+        category_id, // TODO: enum? default ALL?
         lat = this.lat,
         lon = this.lon,
         alt = this.alt
     ) {
         if (!search_radius)
             return Promise.reject(new Error("Need search radius"));
+        if (!lat || !lon || !alt)
+            return Promise.reject(
+                new Error("Need a valid latitude, longitude and altitude")
+            );
+        if (!category)
+            return Promise.reject(new Error("Need a valid category id"));
         let params = this.applyDefaultRequestParams();
         let requestPath = "/above/";
         // TODO: Format TLE?

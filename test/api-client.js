@@ -12,9 +12,9 @@ const apikey = process.env.N2YO_API_KEY;
 
 describe("API client", function() {
     let client = null;
-        beforeEach(() => {
-            client = new N2YO.Client(apikey);
-        });
+    beforeEach(() => {
+        client = new N2YO.Client(apikey);
+    });
     describe("should have an apikey", function() {
         it("and it needs to be default", function() {
             const definedApikey = client.applyDefaultRequestParams();
@@ -53,10 +53,11 @@ describe("API client", function() {
             };
             resultInfo.should.deep.equal(expectedInfo);
             const resultTLE = tleResult.data.tle;
-            let firstLine = resultTLE.split('\r\n')[0].split(' ');
-            let secondLine = resultTLE.split('\r\n')[1].split(' ');
-            const expectedNORADID = '25544U';
-            expect(firstLine[1]).to.equal(expectedNORADID);
+            //TODO: TLE validation?
+            let firstLine = resultTLE.split("\r\n")[0].split(" ");
+            let secondLine = resultTLE.split("\r\n")[1].split(" ");
+            const expectedNORAD_ID = "25544U";
+            expect(firstLine[1]).to.equal(expectedNORAD_ID);
         });
     });
     describe("should be able to get future satellite positions", function() {
