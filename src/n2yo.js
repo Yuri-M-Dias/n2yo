@@ -8,9 +8,16 @@ const dotenv = require("dotenv").config();
  */
 class Client {
     /**
-     * Constructs the client
+     * Constructs the client class
      */
-    constructor(apikey, baseURL, lat = null, lon = null, alt = null) {
+    constructor(
+        apikey,
+        baseURL,
+        lat = null,
+        lon = null,
+        alt = null,
+        tz = null // Time zone information?
+    ) {
         this.apikey = apikey;
         this.baseURL =
             baseURL ||
@@ -19,6 +26,7 @@ class Client {
         this.lat = lat;
         this.lon = lon;
         this.alt = alt;
+        this.tz = tz;
         this.transactionsCount = 0;
         this.instanceAxios();
     }
@@ -65,8 +73,9 @@ class Client {
     async getTLE(satid) {
         if (!satid) return Promise.reject(new Error("Need a valid NORAD ID"));
         let params = this.applyDefaultRequestParams();
+        let requestPath = `/tle/${satid}`;
         // TODO: Format TLE?
-        return this.axios.get("/tle/" + satid, params);
+        return this.axios.get(requestPath, params);
     }
 
     /**
@@ -87,14 +96,13 @@ class Client {
             return Promise.reject(
                 new Error("Need a number of future positions to calculate")
             );
-        if (!lat || !lon || !alt)
+        if (lat == void 0 || lon == void 0 || alt == void 0)
             return Promise.reject(
                 new Error("Need a valid latitude, longitude and altitude")
             );
         let params = this.applyDefaultRequestParams();
-        let requestPath = "/positions/";
-        // TODO: Format TLE?
-        //return this.axios.get("/tle/" + satid, params);
+        let requestPath = `/positions/${satid}/${lat}/${lon}/${alt}/${seconds}`;
+        return this.axios.get(requestPath, params);
     }
 
     /**
@@ -109,7 +117,7 @@ class Client {
         alt = this.alt
     ) {
         if (!satid) return Promise.reject(new Error("Need a valid NORAD ID"));
-        if (!lat || !lon || !alt)
+        if (lat == void 0 || lon == void 0 || alt == void 0)
             return Promise.reject(
                 new Error("Need a valid latitude, longitude and altitude")
             );
@@ -120,9 +128,8 @@ class Client {
                 new Error("Need a valid minimum seconds of visibility")
             );
         let params = this.applyDefaultRequestParams();
-        let requestPath = "/visualpasses/";
-        // TODO: Format TLE?
-        //return this.axios.get("/tle/" + satid, params);
+        let requestPath = `/visualpasses/${satid}/${lat}/${lon}/${alt}/${days}/${min_visibility}`;
+        return this.axios.get(requestPath, params);
     }
 
     /**
@@ -137,7 +144,7 @@ class Client {
         alt = this.alt
     ) {
         if (!satid) return Promise.reject(new Error("Need a valid NORAD ID"));
-        if (!lat || !lon || !alt)
+        if (lat == void 0 || lon == void 0 || alt == void 0)
             return Promise.reject(
                 new Error("Need a valid latitude, longitude and altitude")
             );
@@ -146,9 +153,8 @@ class Client {
         if (!min_elevation)
             return Promise.reject(new Error("Need a valid minimum elevation"));
         let params = this.applyDefaultRequestParams();
-        let requestPath = "/radiopasses/";
-        // TODO: Format TLE?
-        //return this.axios.get("/tle/" + satid, params);
+        let requestPath = `/radiopasses/${satid}/${lat}/${lon}/${alt}/${days}/${min_elevation}`;
+        return this.axios.get(requestPath, params);
     }
 
     /**
@@ -163,16 +169,15 @@ class Client {
     ) {
         if (!search_radius)
             return Promise.reject(new Error("Need search radius"));
-        if (!lat || !lon || !alt)
+        if (lat == void 0 || lon == void 0 || alt == void 0)
             return Promise.reject(
                 new Error("Need a valid latitude, longitude and altitude")
             );
-        if (!category)
+        if (!category_id)
             return Promise.reject(new Error("Need a valid category id"));
         let params = this.applyDefaultRequestParams();
-        let requestPath = "/above/";
-        // TODO: Format TLE?
-        //return this.axios.get("/tle/" + satid, params);
+        let requestPath = `/above/${lat}/${lon}/${alt}/${search_radius}/${category_id}`;
+        return this.axios.get(requestPath, params);
     }
 }
 

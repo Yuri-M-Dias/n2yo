@@ -65,11 +65,66 @@ describe("API client", function() {
             const requestPromise = client.getPositions();
             return requestPromise.should.be.rejectedWith(Error);
         });
+        it("and can make a GET to positions", async function() {
+            const lat = 41.702,
+                lon = -76.114,
+                alt = 1,
+                seconds = 2;
+            const requestPromise = client.getPositions(
+                ISS_NORAD_ID,
+                seconds,
+                lat,
+                lon,
+                alt
+            );
+            requestPromise.should.be.fulfilled;
+            requestPromise.should.not.eventually.have.property("error");
+            requestPromise.should.eventually.have.property("data");
+            const requestResult = await requestPromise;
+            const resultInfo = requestResult.data.info;
+            const expectedInfo = {
+                satid: 25544,
+                satname: "SPACE STATION",
+                transactionscount: client.transactionsCount
+            };
+            resultInfo.should.deep.equal(expectedInfo);
+            const resultPositions = requestResult.data.positions;
+            expect(resultPositions.length).to.equal(seconds);
+        });
     });
     describe("should be able to get visual passes", function() {
         it("and needs id, position and timing information", function() {
             const requestPromise = client.getVisualPasses();
             return requestPromise.should.be.rejectedWith(Error);
+        });
+        it("and can make a GET to visual passes", async function() {
+            const lat = 41.702,
+                lon = -76.114,
+                alt = 0,
+                days = 2,
+                min_visibility = 300;
+            const requestPromise = client.getVisualPasses(
+                ISS_NORAD_ID,
+                days,
+                min_visibility,
+                lat,
+                lon,
+                alt
+            );
+            requestPromise.should.be.fulfilled;
+            requestPromise.should.not.eventually.have.property("error");
+            requestPromise.should.eventually.have.property("data");
+            const requestResult = await requestPromise;
+            const resultInfo = requestResult.data.info;
+            const resultPasses = requestResult.data.passes;
+            const expectedInfo = {
+                passescount: resultPasses.length,
+                satid: 25544,
+                satname: "SPACE STATION",
+                transactionscount: client.transactionsCount
+            };
+            resultInfo.should.deep.equal(expectedInfo);
+            // How to test?
         });
     });
     describe("should be able to get radio passes", function() {
@@ -77,11 +132,67 @@ describe("API client", function() {
             const requestPromise = client.getRadioPasses();
             return requestPromise.should.be.rejectedWith(Error);
         });
+        it("and can make a GET to radio passes", async function() {
+            const lat = 41.702,
+                lon = -76.114,
+                alt = 0,
+                days = 2,
+                min_elevation = 40;
+            const requestPromise = client.getRadioPasses(
+                ISS_NORAD_ID,
+                days,
+                min_elevation,
+                lat,
+                lon,
+                alt
+            );
+            requestPromise.should.be.fulfilled;
+            requestPromise.should.not.eventually.have.property("error");
+            requestPromise.should.eventually.have.property("data");
+            const requestResult = await requestPromise;
+            const resultInfo = requestResult.data.info;
+            const resultPasses = requestResult.data.passes;
+            const expectedInfo = {
+                passescount: resultPasses.length,
+                satid: 25544,
+                satname: "SPACE STATION",
+                transactionscount: client.transactionsCount
+            };
+            resultInfo.should.deep.equal(expectedInfo);
+            // How to test?
+        });
     });
     describe("should be able to get above satellites", function() {
         it("and needs position, radius and a category", function() {
             const requestPromise = client.getAbove();
             return requestPromise.should.be.rejectedWith(Error);
+        });
+        it("and can make a GET to above satellites", async function() {
+            const lat = 41.702,
+                lon = -76.114,
+                alt = 0,
+                radius = 70,
+                category_id = 18; // AMSAT
+            const requestPromise = client.getAbove(
+                radius,
+                category_id,
+                lat,
+                lon,
+                alt
+            );
+            requestPromise.should.be.fulfilled;
+            requestPromise.should.not.eventually.have.property("error");
+            requestPromise.should.eventually.have.property("data");
+            const requestResult = await requestPromise;
+            const resultInfo = requestResult.data.info;
+            const resultAbove = requestResult.data.above;
+            const expectedInfo = {
+                category: "Amateur radio",
+                satcount: resultAbove.length,
+                transactionscount: client.transactionsCount
+            };
+            resultInfo.should.deep.equal(expectedInfo);
+            // How to test?
         });
     });
 });

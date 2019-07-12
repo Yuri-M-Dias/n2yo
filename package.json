@@ -1,6 +1,6 @@
 {
-  "name": "n2yo",
-  "version": "0.0.1",
+  "name": "n2yo.js",
+  "version": "0.1.0",
   "description": "An API wrapper for n2yo",
   "engines": {
     "node": ">=8.0.0"
